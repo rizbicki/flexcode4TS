@@ -104,6 +104,7 @@ create_design_matrix <- function(X=NULL,y,lags_x=NULL,
 #'      y_train=ytrain[(length(ytrain) - 25):length(ytrain)])
 #'
 #' @import FlexCoDE
+#' @export
 fit_flexcode_timeseries <-function(X=NULL,y,lags_x=NULL,
                                    lags_y=lags_x,nTrain=round(0.8*length(y)),
                                    ...)
@@ -159,6 +160,7 @@ fit_flexcode_timeseries <-function(X=NULL,y,lags_x=NULL,
 #' @examples
 #' fit <- fit_flexcode_timeseries(X_train, y_train)
 #' predict_fit_flexcode_timeseries(fit, X_new, y_new, predictionBandProb = TRUE)
+#' @export
 predict.fit_flexcode_timeseries <- function(fit,X_new=NULL,y_new=NA,
                                             predictionBandProb=FALSE)
 {
@@ -215,7 +217,7 @@ predict.fit_flexcode_timeseries <- function(fit,X_new=NULL,y_new=NA,
 #'
 #' @return A plot of the estimated density for the new observations.
 #'
-#' @examples
+#' @export
 plot.fit_flexcode_timeseries <- function(fit,X_new,
                                          y_new,predictionBandProb=TRUE,
                                          y_train=NULL)
@@ -325,36 +327,4 @@ plot.fit_flexcode_timeseries <- function(fit,X_new,
          xlab="Time")
 
   return()
-}
-
-predict_experiments <- function(fit,X_new=NULL,y_new=NULL,
-                                predictionBandProb=0.95)
-{
-  # aux predict function for experiments (cv like test)
-
-
-  pred_values <- predict(fit,X_new[1,,drop=FALSE],
-                         predictionBandProb=predictionBandProb)
-  estimated_densities <- matrix(NA,nrow(X_new),length(pred_values$z))
-  th <- rep(NA,nrow(X_new))
-  lower <- rep(NA,nrow(X_new))
-  upper <- rep(NA,nrow(X_new))
-  estimated_densities[1,] <- pred_values$CDE
-  th[1] <- pred_values$th
-  lower[1] <- pred_values$pred_interval[1]
-  upper[1] <- pred_values$pred_interval[2]
-  for(ii in 2:nrow(X_new))
-  {
-    pred_values <- predict(fit,X_new[1:ii,,drop=FALSE],
-                           y_new = y_new[1:(ii-1)],
-                           predictionBandProb=predictionBandProb)
-    estimated_densities[ii,] <- pred_values$CDE
-    th[ii] <- pred_values$th
-    lower[ii] <- pred_values$pred_interval[1]
-    upper[ii] <- pred_values$pred_interval[2]
-  }
-  return(list(z=pred_values$z,
-              CDE=estimated_densities,
-              th=th,lower=lower,
-              upper=upper))
 }
