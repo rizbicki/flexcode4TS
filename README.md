@@ -37,7 +37,7 @@ y_new <- data$y[-c(1:(nTr))]
 fit <- fit_flexcode_timeseries(X=Xtrain, y=ytrain,
                                lags_x=3, lags_y=3,
                                nTrain=round(0.7*length(ytrain)),
-                               regressionFunction=regressionFunction.XGBoost,
+                               regressionFunction=FlexCoDE::regressionFunction.XGBoost,
                                nIMax=20, chooseSharpen=TRUE)
 # Plot the loss as a function of the number of expansion coefficients
 plot(fit$cde_fit$errors, xlab="Number of expansion coefficients",
