@@ -2,6 +2,7 @@
 #   Check Package:             'Ctrl + Shift + E'
 #   Test Package:              'Ctrl + Shift + T'
 
+
 #' Create design matrix for time series analysis
 #'
 #' This function creates a design matrix from a given set of covariates (X) and a response variable (y). The design matrix includes lagged values of X and y.
@@ -61,6 +62,7 @@ create_design_matrix <- function(X=NULL,y,lags_x=NULL,
 
 #' Fits a FlexCoDE Model for Time Series Data
 #'
+#'
 #' This function fits a FlexCoDE (Flexible Conditional Density Estimation) model for time series data. It is designed to handle input data \(X\) and response \(y\), incorporating lags for both \(X\) and \(y\). The function aims to train the model with a specified subset of observations and returns an object containing the model along with training data and specified lags.
 #'
 #' @param X A matrix or data frame containing the covariates for each observation. It represents the independent variables of the time series.
@@ -69,35 +71,41 @@ create_design_matrix <- function(X=NULL,y,lags_x=NULL,
 #' @param lags_y An integer specifying the number of lagged observations of \(y\) to include in the model. If not specified, it defaults to the same number as `lags_x`.
 #' @param nTrain An integer indicating the number of observations to be used for training. The default value is calculated as `round(0.8 * length(y))`, which uses 80% of the data for training.
 #' @param ... Additional arguments that are passed directly to the underlying `fitFlexCoDE` function.
+#
+#' @return A list containing elements `lags_x`, `lags_y`, `X_train`, `y_train`, and
+#'   `cde_fit`. The `cde_fit` element is the fitted model object from `fitFlexCoDE`.
+#'   The return object has class `"fit_flexcode_timeseries"`.
 #'
-#' @return An object of class "fit_flexcode_timeseries", which is a list containing the following components:
-#' \itemize{
-#'   \item `lags_x`: The number of lags used for \(X\).
-#'   \item `lags_y`: The number of lags used for \(y\).
-#'   \item `X_train`: The training data subset for \(X\).
-#'   \item `y_train`: The training data subset for \(y\).
-#'   \item `model`: The fitted FlexCoDE model.
-#' }
 #'
 #' @examples
 #' # Generate sample time series data
+#'
 #' data <- generate_sample_data(n=10000)
+#'
 #' nTr <- nrow(data$X) - 100
+#'
 #' Xtrain <- data$X[1:nTr,, drop=FALSE]
+#'
 #' ytrain <- data$y[1:nTr]
+#'
 #' X_new <- data$X[-(1:nTr),, drop=FALSE]
+#'
 #' y_new <- data$y[-(1:nTr)]
 #'
 #' # Fit the FlexCoDE model
+#'
 #' fit <- fit_flexcode_timeseries(X=Xtrain, y=ytrain, lags_x=3, lags_y=3,
-#'                                 nTrain=round(0.7 * length(ytrain)),
-#'                                 regressionFunction="xgboost", nIMax=20, chooseSharpen=TRUE)
+#'                                 nTrain=round(0.7 * length(ytrain)), regressionFunction=FlexCoDE::regressionFunction.XGBoost, nIMax=20,
+#'                                 chooseSharpen=TRUE)
+#'
 #'
 #' # Plot the model's errors
+#'
 #' plot(fit$cde_fit$errors, xlab="Number of expansion coefficients",
 #'      ylab="Loss", cex.lab=1.38, pch=16)
 #'
 #' # Print model summary and plot variable importance
+#'
 #' print(fit$cde_fit)
 #'
 #' plot(fit, X_new, y_new, predictionBandProb=0.95,
@@ -327,4 +335,36 @@ plot.fit_flexcode_timeseries <- function(fit,X_new,
          xlab="Time")
 
   return()
+}
+
+predict_experiments <- function(fit,X_new=NULL,y_new=NULL,
+                                predictionBandProb=0.95)
+{
+  # aux predict function for experiments (cv like test)
+
+
+  pred_values <- predict(fit,X_new[1,,drop=FALSE],
+                         predictionBandProb=predictionBandProb)
+  estimated_densities <- matrix(NA,nrow(X_new),length(pred_values$z))
+  th <- rep(NA,nrow(X_new))
+  lower <- rep(NA,nrow(X_new))
+  upper <- rep(NA,nrow(X_new))
+  estimated_densities[1,] <- pred_values$CDE
+  th[1] <- pred_values$th
+  lower[1] <- pred_values$pred_interval[1]
+  upper[1] <- pred_values$pred_interval[2]
+  for(ii in 2:nrow(X_new))
+  {
+    pred_values <- predict(fit,X_new[1:ii,,drop=FALSE],
+                           y_new = y_new[1:(ii-1)],
+                           predictionBandProb=predictionBandProb)
+    estimated_densities[ii,] <- pred_values$CDE
+    th[ii] <- pred_values$th
+    lower[ii] <- pred_values$pred_interval[1]
+    upper[ii] <- pred_values$pred_interval[2]
+  }
+  return(list(z=pred_values$z,
+              CDE=estimated_densities,
+              th=th,lower=lower,
+              upper=upper))
 }
