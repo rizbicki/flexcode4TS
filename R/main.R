@@ -247,7 +247,7 @@ plot.fit_flexcode_timeseries <- function(fit,X_new,
                      vertical=y_new[i])
     data=rbind(data,dataB)
   }
-  g=ggplot(data,ggplot2::aes(x=x,y=y))+
+  g=ggplot2::ggplot(data,ggplot2::aes(x=x,y=y))+
     geom_line(size=1,color=2)+xlab("Response")+
     ylab("Estimated Density")+
     geom_vline(ggplot2::aes(xintercept=vertical),size=1)+
