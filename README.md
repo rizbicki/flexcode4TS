@@ -1,6 +1,12 @@
-Code to implement the FlexCodeTS conditional density estimator described on the paper "Flexible conditional density estimation for time series", by G. Grivol, R. Izbicki, A. A. Okuno and R. B. Stern, available on https://arxiv.org/pdf/2301.09671.pdf
+Code to implement the FlexCodeTS conditional density estimator described in the paper "Flexible conditional density estimation for time series", by G. Grivol, R. Izbicki, A. A. Okuno and R. B. Stern, available at https://arxiv.org/pdf/2301.09671.pdf
 
 The method estimates $f(y_{t+1}|y_1,\ldots,y_t,x_t)$, where $x_t$ are exogenous variables using FlexCode (Izbicki, Rafael, and Ann B. Lee. "Converting high-dimensional regression to high-dimensional conditional density estimation." (2017): 2800-2831.)
+
+Installation:
+
+```r
+install_github("flexcode4TS",username="rizbicki")
+```
 
 Example of usage:
 
