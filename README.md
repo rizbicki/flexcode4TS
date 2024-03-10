@@ -11,6 +11,8 @@ devtools::install_github("rizbicki/flexcode4TS")
 Example of usage:
 
 ```r
+library(flexcode4TS)
+
 # Data generator to illustrate the method:
 model_1 <- function(n)
 {
