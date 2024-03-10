@@ -51,4 +51,4 @@ print(fit$cde_fit)
 plot(fit, X_new, y_new, predictionBandProb=0.95,
      y_train = ytrain[(length(ytrain)-25):length(ytrain)])
 
-``
+```
