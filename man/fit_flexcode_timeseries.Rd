@@ -27,37 +27,42 @@ fit_flexcode_timeseries(
 \item{...}{Additional arguments that are passed directly to the underlying `fitFlexCoDE` function.}
 }
 \value{
-An object of class "fit_flexcode_timeseries", which is a list containing the following components:
-\itemize{
-  \item `lags_x`: The number of lags used for \(X\).
-  \item `lags_y`: The number of lags used for \(y\).
-  \item `X_train`: The training data subset for \(X\).
-  \item `y_train`: The training data subset for \(y\).
-  \item `model`: The fitted FlexCoDE model.
-}
+A list containing elements `lags_x`, `lags_y`, `X_train`, `y_train`, and
+  `cde_fit`. The `cde_fit` element is the fitted model object from `fitFlexCoDE`.
+  The return object has class `"fit_flexcode_timeseries"`.
 }
 \description{
 This function fits a FlexCoDE (Flexible Conditional Density Estimation) model for time series data. It is designed to handle input data \(X\) and response \(y\), incorporating lags for both \(X\) and \(y\). The function aims to train the model with a specified subset of observations and returns an object containing the model along with training data and specified lags.
 }
 \examples{
 # Generate sample time series data
+
 data <- generate_sample_data(n=10000)
+
 nTr <- nrow(data$X) - 100
+
 Xtrain <- data$X[1:nTr,, drop=FALSE]
+
 ytrain <- data$y[1:nTr]
+
 X_new <- data$X[-(1:nTr),, drop=FALSE]
+
 y_new <- data$y[-(1:nTr)]
 
 # Fit the FlexCoDE model
+
 fit <- fit_flexcode_timeseries(X=Xtrain, y=ytrain, lags_x=3, lags_y=3,
-                                nTrain=round(0.7 * length(ytrain)),
-                                regressionFunction="xgboost", nIMax=20, chooseSharpen=TRUE)
+                                nTrain=round(0.7 * length(ytrain)), regressionFunction=FlexCoDE::regressionFunction.XGBoost, nIMax=20,
+                                chooseSharpen=TRUE)
+
 
 # Plot the model's errors
+
 plot(fit$cde_fit$errors, xlab="Number of expansion coefficients",
      ylab="Loss", cex.lab=1.38, pch=16)
 
 # Print model summary and plot variable importance
+
 print(fit$cde_fit)
 
 plot(fit, X_new, y_new, predictionBandProb=0.95,
