@@ -5,7 +5,7 @@ The method estimates $f(y_{t+1}|y_1,\ldots,y_t,x_t)$, where $x_t$ are exogenous 
 Installation:
 
 ```r
-install_github("flexcode4TS",username="rizbicki")
+devtools::install_github("rizbicki/flexcode4TS")
 ```
 
 Example of usage:
