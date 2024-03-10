@@ -112,6 +112,7 @@ create_design_matrix <- function(X=NULL,y,lags_x=NULL,
 #'      y_train=ytrain[(length(ytrain) - 25):length(ytrain)])
 #'
 #' @import FlexCoDE
+#' @import ggplot2
 #' @export
 fit_flexcode_timeseries <-function(X=NULL,y,lags_x=NULL,
                                    lags_y=lags_x,nTrain=round(0.8*length(y)),
