@@ -2,8 +2,6 @@
 #   Check Package:             'Ctrl + Shift + E'
 #   Test Package:              'Ctrl + Shift + T'
 
-library(FlexCoDE)
-
 #' Create design matrix for time series analysis
 #'
 #' This function creates a design matrix from a given set of covariates (X) and a response variable (y). The design matrix includes lagged values of X and y.
